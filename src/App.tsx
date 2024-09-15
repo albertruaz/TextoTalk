@@ -1,35 +1,30 @@
-import { createSignal } from 'solid-js'
-import solidLogo from './assets/solid.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { createSignal } from "solid-js";
+import FileUpload from "./components/FileUpload";
+import ParsedDataDisplay from "./components/ParsedDataDisplay";
+import UserInfoForm from "./components/UserInfoForm";
+import { parseData, ParsedData } from "./utils/parseData";
 
 function App() {
-  const [count, setCount] = createSignal(0)
+  const [parsedData, setParsedData] = createSignal<ParsedData[]>([]);
+  const [userInfo, setUserInfo] = createSignal<string>("");
+
+  const handleFileParsed = (data: string) => {
+    const parsed = parseData(data);
+    setParsedData(parsed);
+  };
+
+  const handleUserInfoSubmit = (info: string) => {
+    setUserInfo(info);
+  };
 
   return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} class="logo" alt="Vite logo" />
-        </a>
-        <a href="https://solidjs.com" target="_blank">
-          <img src={solidLogo} class="logo solid" alt="Solid logo" />
-        </a>
-      </div>
-      <h1>Vite + Solid</h1>
-      <div class="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count()}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p class="read-the-docs">
-        Click on the Vite and Solid logos to learn more
-      </p>
-    </>
-  )
+    <div>
+      <h1>File Upload Example</h1>
+      <FileUpload onFileParsed={handleFileParsed} />
+      <UserInfoForm onSubmit={handleUserInfoSubmit} />
+      <ParsedDataDisplay data={parsedData()} info={userInfo()} />
+    </div>
+  );
 }
 
-export default App
+export default App;
