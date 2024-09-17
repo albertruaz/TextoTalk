@@ -20,6 +20,9 @@ function App() {
   return (
     <div>
       <h1>File Upload Example</h1>
+      <h1 class="text-3xl font-bold text-blue-500">
+        Hello world!
+      </h1>
       <FileUpload onFileParsed={handleFileParsed} />
       <UserInfoForm onSubmit={handleUserInfoSubmit} />
       <ParsedDataDisplay data={parsedData()} info={userInfo()} />
