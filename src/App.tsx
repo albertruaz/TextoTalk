@@ -36,7 +36,7 @@
 import { createSignal } from 'solid-js';
 import { FileUploader } from './components/FileUploader';
 import { ChatWindow } from './components/ChatWindow';
-import { Message } from './types';
+import { Message } from './type';
 
 function App() {
   const [messages, setMessages] = createSignal<Message[]>([]);

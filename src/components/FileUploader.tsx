@@ -1,7 +1,7 @@
 // src/components/FileUploader.tsx
 import { createSignal } from 'solid-js';
 import { parseKakaoTalk } from '../utils/parseKakaoTalk';
-import { Message } from '../types';
+import { Message } from '../type';
 
 interface Props {
   onMessagesParsed: (messages: Message[]) => void;

@@ -1,6 +1,6 @@
 // src/components/ChatWindow.tsx
 import { For } from 'solid-js';
-import { Message } from '../types';
+import { Message } from '../type';
 import { MessageBubble } from './MessageBubble';
 
 interface Props {

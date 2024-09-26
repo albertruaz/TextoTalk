@@ -1,5 +1,5 @@
 // src/components/MessageBubble.tsx
-import { Message } from '../types';
+import { Message } from '../type';
 
 interface Props {
   message: Message;
@@ -12,7 +12,9 @@ export function MessageBubble(props: Props) {
     : 'bg-gray-200 text-black self-start';
 
   return (
-    <div class={`flex flex-col ${props.isMine ? 'items-end' : 'items-start'} my-1`}>
+    <div
+      class={`flex flex-col ${props.isMine ? 'items-end' : 'items-start'} my-1`}
+    >
       {!props.isMine && (
         <span class="text-xs text-gray-500 mb-0.5">{props.message.sender}</span>
       )}
@@ -20,7 +22,10 @@ export function MessageBubble(props: Props) {
         {props.message.content}
       </div>
       <span class="text-xs text-gray-400 mt-0.5">
-        {props.message.date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+        {props.message.date.toLocaleTimeString([], {
+          hour: '2-digit',
+          minute: '2-digit',
+        })}
       </span>
     </div>
   );

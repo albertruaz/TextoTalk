@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "baseUrl": "./src", // 프로젝트의 기본 경로를 설정
     "target": "ES2020",
     "useDefineForClassFields": true,
     "module": "ESNext",
@@ -21,10 +22,5 @@
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true
   },
-  "include":[
-    "src/**/*.ts",
-    "src/**/*.tsx",
-    "src",
-    "*.ts",
-  ]
+  "include": ["src/**/*.ts", "src/**/*.tsx", "src", "*.ts"]
 }

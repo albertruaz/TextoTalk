@@ -1,28 +1,39 @@
-import { Message } from '../types';
+// src/utils/parseKakaoTalk.ts
+import { Message } from '../type';
 
 export function parseKakaoTalk(text: string): Message[] {
   const lines = text.split('\n');
   const messages: Message[] = [];
   let currentDate = '';
+  let currentMessage: Message | null = null;
 
   const dateRegex = /^(\d{4})년 (\d{1,2})월 (\d{1,2})일 [월화수목금토일]요일$/;
   const messageRegex =
-    /^(\d{4}\. ?\d{1,2}\. ?\d{1,2}\.? ?\d{1,2}:\d{2}), (.+?) : (.+)$/;
+    /^(\d{4}\.\s*\d{1,2}\.\s*\d{1,2}\.\s*\d{1,2}:\d{2}),\s([^:]+?)\s:\s(.*)$/;
 
   for (let i = 0; i < lines.length; i++) {
-    const line = lines[i].trim();
+    let line = lines[i].trim();
 
     if (dateRegex.test(line)) {
       currentDate = line;
+      if (currentMessage) {
+        messages.push(currentMessage);
+        currentMessage = null;
+      }
     } else {
-      const match = line.match(messageRegex);
+      let match = line.match(messageRegex);
       if (match) {
-        const [, dateTime, sender, content] = match;
-        const dateString = dateTime.replace(/\./g, '-'); // '2023-6-10 12:25'
-        const date = new Date(dateString);
+        if (currentMessage) {
+          messages.push(currentMessage);
+        }
+
+        let [, dateTime, sender, content] = match;
+
+        // 날짜 문자열을 표준 형식으로 변환
+        const dateTimeString = dateTime.replace(/\.\s*/g, '-'); // '2024-9-12-19:19'
+        const date = new Date(dateTimeString);
 
         let type: 'text' | 'photo' | 'system' = 'text';
-        let finalContent = content;
 
         if (content.startsWith('사진') || content.startsWith('사진 ')) {
           type = 'photo';
@@ -30,31 +41,34 @@ export function parseKakaoTalk(text: string): Message[] {
           type = 'system';
         }
 
-        messages.push({
+        currentMessage = {
           date,
-          sender,
-          content: finalContent,
+          sender: sender.trim(),
+          content: content.trim(),
           type,
-        });
-      } else if (line !== '') {
-        // 다음 라인들이 추가적인 메시지 내용인지 확인
-        let content = line;
-        while (
-          i + 1 < lines.length &&
-          !messageRegex.test(lines[i + 1]) &&
-          lines[i + 1].trim() !== ''
-        ) {
-          i++;
-          content += '\n' + lines[i].trim();
+        };
+      } else if (line === '') {
+        // 빈 줄은 무시
+      } else {
+        // 메시지 형식이 아닌 경우 (여러 줄 메시지의 연속)
+        if (currentMessage) {
+          currentMessage.content += '\n' + line;
+        } else {
+          // 현재 메시지가 없으면 시스템 메시지로 취급
+          currentMessage = {
+            date: new Date(),
+            sender: '',
+            content: line,
+            type: 'system',
+          };
         }
-        messages.push({
-          date: new Date(),
-          sender: '',
-          content,
-          type: 'system',
-        });
       }
     }
+  }
+
+  // 마지막 메시지 추가
+  if (currentMessage) {
+    messages.push(currentMessage);
   }
 
   return messages;
