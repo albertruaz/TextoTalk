@@ -1,4 +1,3 @@
-// src/utils/parseKakaoTalk.ts
 import { Message } from '../type';
 
 export function parseKakaoTalk(text: string): Message[] {

@@ -9,6 +9,10 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@date-io/date-fns": "^3.0.0",
+    "@suid/icons-material": "^0.8.1",
+    "@suid/material": "^0.18.0",
+    "date-fns": "^3.6.0",
     "solid-js": "^1.8.20",
     "solid-primitives": "^0.0.1"
   },

@@ -1,11 +1,11 @@
-import { Component, createSignal } from "solid-js";
+import { Component, createSignal } from 'solid-js';
 
 interface UserInfoFormProps {
   onSubmit: (info: string) => void;
 }
 
 const UserInfoForm: Component<UserInfoFormProps> = (props) => {
-  const [info, setInfo] = createSignal<string>("");
+  const [info, setInfo] = createSignal<string>('');
 
   const handleSubmit = (event: Event) => {
     event.preventDefault();
