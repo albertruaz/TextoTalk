@@ -30,3 +30,4 @@ build
 .vite-inspect/
 *.tsbuildinfo
 .DS_Store
+.prettierrc
