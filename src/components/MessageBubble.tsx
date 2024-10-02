@@ -1,13 +1,22 @@
 import { JSX } from 'solid-js';
 import { Message } from '../type';
+import { format } from 'date-fns';
 
 interface Props {
   message: Message;
+  isDate: boolean;
   isMine: boolean;
   searchTerm: string;
 }
 
 export function MessageBubble(props: Props): JSX.Element {
+  if (props.isDate) {
+    return (
+      <div class="text-center my-2 text-gray-500">
+        {format(props.message.date, 'yyyy-MM-dd')}
+      </div>
+    );
+  }
   const bubbleClass = props.isMine
     ? 'bg-blue-500 text-white self-end'
     : 'bg-gray-200 text-black self-start';

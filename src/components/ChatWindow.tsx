@@ -52,6 +52,7 @@ export function ChatWindow(props: Props): JSX.Element {
             >
               <MessageBubble
                 message={message}
+                isDate={message.type === 'date'}
                 isMine={message.sender === props.currentUser}
                 searchTerm={props.searchTerm}
               />

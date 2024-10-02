@@ -68,9 +68,12 @@ function App() {
 
   const handleDateSelect = (date: Date) => {
     setShowCalendar(false); // 날짜 선택 후 달력을 숨깁니다.
+
     if (currentChat()) {
       const index = currentChat()!.messages.findIndex(
-        (msg) => format(msg.date, 'yyyy-MM-dd') === format(date, 'yyyy-MM-dd')
+        (msg) =>
+          msg.type === 'date' &&
+          format(msg.date, 'yyyy-MM-dd') === format(date, 'yyyy-MM-dd')
       );
       if (index !== -1) {
         scrollToMessage(index);
@@ -88,21 +91,12 @@ function App() {
       }
     }
   };
-
   const availableDates = createMemo(() => {
     if (!currentChat()) return [];
-    const dates = new Set<string>();
-    currentChat()!.messages.forEach((msg) => {
-      if (isValid(msg.date)) {
-        const dateStr = format(msg.date, 'yyyy-MM-dd');
-        dates.add(dateStr);
-      } else {
-        console.warn('Invalid message date:', msg);
-      }
-    });
-    return Array.from(dates)
-      .map((dateStr) => parse(dateStr, 'yyyy-MM-dd', new Date()))
-      .filter((date) => isValid(date));
+
+    return currentChat()!
+      .messages.filter((msg) => msg.type === 'date' && isValid(msg.date))
+      .map((msg) => msg.date);
   });
 
   const currentUser = '강승완'; // 본인의 이름으로 설정하세요.

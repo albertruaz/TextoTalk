@@ -1,6 +1,6 @@
 import { createSignal, JSX } from 'solid-js';
 import { parseKakaoTalk } from '../utils/parseKakaoTalk';
-import { Message } from '../types';
+import { Message } from '../type';
 
 interface Props {
   onFileUploaded: (name: string, messages: Message[]) => void;

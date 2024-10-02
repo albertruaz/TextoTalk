@@ -3,7 +3,6 @@ import { Message } from '../type';
 export function parseKakaoTalk(text: string): Message[] {
   const lines = text.split('\n');
   const messages: Message[] = [];
-  let currentDate = '';
   let currentMessage: Message | null = null;
 
   const dateRegex = /^(\d{4})년 (\d{1,2})월 (\d{1,2})일 [월화수목금토일]요일$/;
@@ -14,11 +13,24 @@ export function parseKakaoTalk(text: string): Message[] {
     let line = lines[i].trim();
 
     if (dateRegex.test(line)) {
-      currentDate = line;
       if (currentMessage) {
         messages.push(currentMessage);
-        currentMessage = null;
       }
+      const match = line.match(dateRegex);
+      if (match) {
+        currentMessage = {
+          date: new Date(
+            parseInt(match[1], 10),
+            parseInt(match[2], 10),
+            parseInt(match[3], 10)
+          ),
+          sender: '',
+          content: '',
+          type: 'date',
+        };
+        messages.push(currentMessage);
+      }
+      currentMessage = null;
     } else {
       let match = line.match(messageRegex);
       if (match) {
