@@ -31,3 +31,6 @@ build
 *.tsbuildinfo
 .DS_Store
 .prettierrc
+
+# Sample
+sample
