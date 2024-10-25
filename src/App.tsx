@@ -13,6 +13,12 @@ interface Chat {
   messages: Message[];
 }
 
+const themes: { [key: string]: string } = {
+  kakao: 'kakao',
+  imessage: 'imessage',
+  telegram: 'telegram',
+};
+
 function generateUniqueId() {
   return Math.random().toString(36).substr(2, 9);
 }
@@ -25,6 +31,16 @@ function App() {
   const [currentResultIndex, setCurrentResultIndex] = createSignal(0);
   const [showFileUploader, setShowFileUploader] = createSignal(false);
   const [showCalendar, setShowCalendar] = createSignal(false); // 달력 가시성 상태 추가
+  const [theme, setTheme] = createSignal(
+    localStorage.getItem('theme') || 'kakao'
+  ); // 기본 테마는 kakao
+
+  const toggleTheme = (newTheme: string) => {
+    if (themes[newTheme]) {
+      setTheme(newTheme);
+      localStorage.setItem('theme', newTheme);
+    }
+  };
 
   const addChat = (name: string, messages: Message[]) => {
     const newChat: Chat = {
@@ -41,6 +57,9 @@ function App() {
   );
 
   createEffect(() => {
+    document.documentElement.className = themes[theme()];
+    localStorage.setItem('theme', theme());
+
     const term = searchTerm().toLowerCase();
     if (term && currentChat()) {
       const indices = currentChat()!
@@ -110,6 +129,7 @@ function App() {
         onAddChat={() => {
           setShowFileUploader(true);
         }}
+        toggleTheme={toggleTheme} // 테마 전환 함수 전달
       />
       <div class="flex-grow flex flex-col">
         {showFileUploader() ? (
@@ -151,6 +171,26 @@ function App() {
                   />
                 </svg>
               </button>
+              <div class="flex justify-end">
+                <button
+                  onClick={() => toggleTheme('kakao')}
+                  class="mr-2 bg-[#f9e000] text-black px-2 py-1 rounded"
+                >
+                  Kakao
+                </button>
+                <button
+                  onClick={() => toggleTheme('imessage')}
+                  class="mr-2 bg-blue-500 text-white px-2 py-1 rounded"
+                >
+                  iMessage
+                </button>
+                <button
+                  onClick={() => toggleTheme('telegram')}
+                  class="bg-gray-600 text-white px-2 py-1 rounded"
+                >
+                  Telegram
+                </button>
+              </div>
             </div>
             {/* 달력 표시 */}
             {showCalendar() && (
@@ -168,6 +208,7 @@ function App() {
               searchResults={searchResults()}
               currentResultIndex={currentResultIndex()}
               searchTerm={searchTerm()}
+              theme={theme()}
             />
           </>
         ) : (

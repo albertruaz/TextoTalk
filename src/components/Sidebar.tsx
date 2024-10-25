@@ -10,6 +10,7 @@ interface Props {
   currentChatId: string;
   onSelectChat: (id: string) => void;
   onAddChat: () => void;
+  toggleTheme: (theme: string) => void;
 }
 
 export function Sidebar(props: Props): JSX.Element {
