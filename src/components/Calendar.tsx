@@ -1,57 +1,54 @@
-import { For, createSignal, JSX } from 'solid-js';
-import {
-  getMonth,
-  getYear,
-  getDaysInMonth,
-  format,
-  startOfMonth,
-} from 'date-fns';
+import { For, createSignal, createMemo, createEffect, JSX } from 'solid-js';
+import { getDaysInMonth, format, startOfMonth } from 'date-fns';
 
 interface Props {
   availableDates: Date[];
   onSelectDate: (date: Date) => void;
+  currentMonth: () => Date;
+  setCurrentMonth: (date: Date) => void;
 }
 
 export function Calendar(props: Props): JSX.Element {
-  const [currentMonth, setCurrentMonth] = createSignal(new Date());
+  const currentMonth = props.currentMonth;
+  const setCurrentMonth = props.setCurrentMonth;
 
-  const daysInMonth = () => getDaysInMonth(currentMonth());
-  const firstDayOfMonth = () => startOfMonth(currentMonth()).getDay();
+  // const [currentMonth, setCurrentMonth] = createSignal(new Date());
 
-  const availableDateStrings = props.availableDates.map((date) =>
-    format(date, 'yyyy-MM-dd')
+  const daysInMonth = createMemo(() => getDaysInMonth(currentMonth()));
+  const firstDayOfMonth = createMemo(() =>
+    startOfMonth(currentMonth()).getDay()
   );
 
   const handlePrevMonth = () => {
-    const prevMonth = new Date(currentMonth());
-    prevMonth.setMonth(prevMonth.getMonth() - 1);
-    setCurrentMonth(prevMonth);
+    const prev = currentMonth();
+    setCurrentMonth(new Date(prev.getFullYear(), prev.getMonth() - 1));
   };
 
   const handleNextMonth = () => {
-    const nextMonth = new Date(currentMonth());
-    nextMonth.setMonth(nextMonth.getMonth() + 1);
-    setCurrentMonth(nextMonth);
+    const next = currentMonth();
+    setCurrentMonth(new Date(next.getFullYear(), next.getMonth() + 1));
   };
 
-  const isDateAvailable = (date: Date) => {
-    const dateString = format(date, 'yyyy-MM-dd');
-    return availableDateStrings.includes(dateString);
-  };
+  const daysArray = createMemo(() => {
+    const year = currentMonth().getFullYear();
+    const month = currentMonth().getMonth();
+    const availableDateSet = new Set(
+      props.availableDates
+        .filter(
+          (date) => date.getFullYear() === year && date.getMonth() === month
+        )
+        .map((date) => format(date, 'yyyy-MM-dd'))
+    );
 
-  const isDayAvailable = (day: number) => {
-    const year = currentMonth().getFullYear().toString();
-    const month = (currentMonth().getMonth() + 1).toString().padStart(2, '0'); // 월은 0부터 시작하므로 1을 더함
-    const dayString = day.toString().padStart(2, '0'); // 일(day)을 문자열로 변환
-    const dateString = `${year}-${month}-${dayString}`;
-    return availableDateStrings.includes(dateString);
-  };
-
-  const handleSelectDate = (date: Date) => {
-    if (isDateAvailable(date)) {
-      props.onSelectDate(date); // 날짜가 활성화되었을 경우 해당 날짜로 이동
-    }
-  };
+    return Array.from({ length: daysInMonth() }, (_, i) => {
+      const day = i + 1;
+      const dateString = format(new Date(year, month, day), 'yyyy-MM-dd');
+      return {
+        day,
+        isAvailable: availableDateSet.has(dateString),
+      };
+    });
+  });
 
   return (
     <div class="p-2 w-64 h-64">
@@ -61,37 +58,30 @@ export function Calendar(props: Props): JSX.Element {
         <button onClick={handleNextMonth}>&gt;</button>
       </div>
       <div class="grid grid-cols-7 gap-1 text-center">
-        {['일', '월', '화', '수', '목', '금', '토'].map((day) => (
-          <div class="font-semibold">{day}</div>
-        ))}
-
+        <For each={['일', '월', '화', '수', '목', '금', '토']}>
+          {(day) => <div class="font-semibold">{day}</div>}
+        </For>
         <For each={Array(firstDayOfMonth()).fill(0)}>{() => <div></div>}</For>
 
-        <For
-          each={Array(daysInMonth())
-            .fill(0)
-            .map((_, i) => i + 1)}
-        >
-          {(day) => {
+        <For each={daysArray()}>
+          {(item) => {
             const date = new Date(
               currentMonth().getFullYear(),
               currentMonth().getMonth(),
-              day
+              item.day
             );
-            // const available = isDateAvailable(date);
-            const available = isDayAvailable(day);
-
             return (
               <button
-                class={`p-1 rounded text-sm ${
-                  available
-                    ? 'bg-blue-500 text-white'
-                    : 'bg-gray-200 text-gray-500 cursor-not-allowed'
-                }`}
-                disabled={!available}
-                onClick={() => handleSelectDate(date)}
+                class="p-1 rounded text-sm"
+                classList={{
+                  'bg-blue-500 text-white': item.isAvailable,
+                  'bg-gray-200 text-gray-500 cursor-not-allowed':
+                    !item.isAvailable,
+                }}
+                disabled={!item.isAvailable}
+                onClick={() => props.onSelectDate(date)}
               >
-                {day}
+                {item.day}
               </button>
             );
           }}

@@ -6,6 +6,7 @@ import { Sidebar } from './components/Sidebar';
 import { FileUploader } from './components/FileUploader';
 import { Message } from './type';
 import { format, parse, isValid } from 'date-fns';
+import { Switch, Match } from 'solid-js';
 
 interface Chat {
   id: string;
@@ -31,6 +32,7 @@ function App() {
   const [currentResultIndex, setCurrentResultIndex] = createSignal(0);
   const [showFileUploader, setShowFileUploader] = createSignal(false);
   const [showCalendar, setShowCalendar] = createSignal(false); // 달력 가시성 상태 추가
+  const [currentMonth, setCurrentMonth] = createSignal(new Date()); // 달력의 현재 월 추가
   const [theme, setTheme] = createSignal(
     localStorage.getItem('theme') || 'kakao'
   ); // 기본 테마는 kakao
@@ -132,15 +134,16 @@ function App() {
         toggleTheme={toggleTheme} // 테마 전환 함수 전달
       />
       <div class="flex-grow flex flex-col">
-        {showFileUploader() ? (
-          <FileUploader
-            onFileUploaded={(name, messages) => {
-              addChat(name, messages);
-              setShowFileUploader(false);
-            }}
-          />
-        ) : currentChat() ? (
-          <>
+        <Switch>
+          <Match when={showFileUploader()}>
+            <FileUploader
+              onFileUploaded={(name, messages) => {
+                addChat(name, messages);
+                setShowFileUploader(false);
+              }}
+            />
+          </Match>
+          <Match when={currentChat()}>
             <div class="flex items-center">
               <SearchBar
                 searchTerm={searchTerm()}
@@ -198,6 +201,8 @@ function App() {
                 <Calendar
                   availableDates={availableDates()}
                   onSelectDate={handleDateSelect}
+                  currentMonth={currentMonth}
+                  setCurrentMonth={setCurrentMonth}
                 />
               </div>
             )}
@@ -210,10 +215,11 @@ function App() {
               searchTerm={searchTerm()}
               theme={theme()}
             />
-          </>
-        ) : (
-          <div class="p-4">채팅을 선택하거나 추가하세요.</div>
-        )}
+          </Match>
+          <Match when={!currentChat() && !showFileUploader()}>
+            <div class="p-4">채팅을 선택하거나 추가하세요.</div>
+          </Match>
+        </Switch>
       </div>
     </div>
   );
