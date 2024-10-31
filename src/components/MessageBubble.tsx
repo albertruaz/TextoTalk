@@ -1,4 +1,4 @@
-import { JSX } from 'solid-js';
+import { For, Show, JSX } from 'solid-js';
 import { Message } from '../type';
 import { format } from 'date-fns';
 
@@ -68,14 +68,24 @@ export function MessageBubble(props: Props): JSX.Element {
     }
     const regex = new RegExp(`(${props.searchTerm})`, 'gi');
     const parts = props.message.content.split(regex);
-    return parts.map((part) => (regex.test(part) ? <mark>{part}</mark> : part));
+    return (
+      <For each={parts}>
+        {(part) => (
+          <Show when={regex.test(part)} fallback={<>{part}</>}>
+            <mark>{part}</mark>
+          </Show>
+        )}
+      </For>
+    );
   };
 
   return (
     <div
-      class={`flex flex-col ${
-        props.isMine ? 'items-end' : 'items-start'
-      } my-1 max-w-full`}
+      class="flex flex-col my-1 max-w-full"
+      classList={{
+        'items-end': props.isMine,
+        'items-start': !props.isMine,
+      }}
     >
       {!props.isMine && (
         <span class="text-xs text-gray-500 mb-0.5">{props.message.sender}</span>

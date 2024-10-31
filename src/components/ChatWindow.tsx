@@ -64,9 +64,10 @@ export function ChatWindow(props: Props): JSX.Element {
 
           return (
             <div
-              class={`${isSearchResult ? 'bg-yellow-200' : ''} ${
-                isCurrentResult ? 'border border-blue-500' : ''
-              }`}
+              classList={{
+                'bg-yellow-200': isSearchResult,
+                'border border-blue-500': isCurrentResult,
+              }}
             >
               <MessageBubble
                 message={message}

@@ -22,9 +22,10 @@ export function Sidebar(props: Props): JSX.Element {
       <For each={props.chats}>
         {(chat) => (
           <div
-            class={`p-2 cursor-pointer ${
-              chat.id === props.currentChatId ? 'bg-gray-700' : ''
-            }`}
+            class="p-2 cursor-pointer"
+            classList={{
+              'bg-gray-700': chat.id === props.currentChatId,
+            }}
             onClick={() => props.onSelectChat(chat.id)}
           >
             {chat.name}

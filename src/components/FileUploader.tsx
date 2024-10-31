@@ -46,9 +46,11 @@ export function FileUploader(props: Props): JSX.Element {
 
   return (
     <div
-      class={`border-dashed border-2 p-4 ${
-        isDragging() ? 'border-blue-500' : 'border-gray-300'
-      }`}
+      class="border-dashed border-2 p-4"
+      classList={{
+        'border-blue-500': isDragging(),
+        'border-gray-300': !isDragging(),
+      }}
       onDrop={handleDrop}
       onDragOver={handleDragOver}
       onDragLeave={handleDragLeave}
